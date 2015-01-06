@@ -1,0 +1,15 @@
+[
+{
+  "modid": "FormulaBuilder",
+  "name": "Formula Builder",
+  "description": "",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Ato"],
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
