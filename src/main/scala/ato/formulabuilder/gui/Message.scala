@@ -14,13 +14,15 @@ class Message extends IMessage {
     x = buf.readInt()
     y = buf.readInt()
     z = buf.readInt()
-    formula = String.valueOf(buf.readBytes(buf.readableBytes()))
+    val bytes = new Array[Byte](buf.readableBytes())
+    buf.readBytes(bytes)
+    formula = new String(bytes, "UTF-8")
   }
 
   override def toBytes(buf: ByteBuf): Unit = {
     buf.writeInt(x)
     buf.writeInt(y)
     buf.writeInt(z)
-    buf.writeBytes(formula.getBytes())
+    buf.writeBytes(formula.getBytes("UTF-8"))
   }
 }

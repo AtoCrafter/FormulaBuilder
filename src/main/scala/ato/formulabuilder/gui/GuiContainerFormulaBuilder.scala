@@ -21,6 +21,8 @@ class GuiContainerFormulaBuilder(container: ContainerFormulaBuilder) extends Gui
     val j = (this.height - this.ySize) / 2
     textField = new GuiTextField(fontRendererObj, i + 62, j + 24, 103, 12)
     textField.setFocused(true)
+    textField.setMaxStringLength(1024)
+    textField.setText(container.tileentity.formula)
     buttonSubmit = new GuiButton(0, 0, 0, "Submit")
     buttonList.asInstanceOf[java.util.List[GuiButton]].add(buttonSubmit)
   }
