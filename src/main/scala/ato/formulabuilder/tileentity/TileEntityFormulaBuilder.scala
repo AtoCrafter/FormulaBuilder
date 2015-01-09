@@ -3,6 +3,8 @@ package ato.formulabuilder.tileentity
 import ato.formulabuilder.util.ParserFormula
 import net.minecraft.init.Blocks
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity
+import net.minecraft.network.{NetworkManager, Packet}
 import net.minecraft.tileentity.TileEntity
 
 class TileEntityFormulaBuilder extends TileEntity {
@@ -83,4 +85,12 @@ class TileEntityFormulaBuilder extends TileEntity {
     tag.setInteger("Progress", progress)
     nbt.setTag("FormulaBuilder", tag)
   }
+
+  override def getDescriptionPacket: Packet = {
+    val nbt = new NBTTagCompound()
+    writeToNBT(nbt)
+    new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, nbt)
+  }
+
+  override def onDataPacket(net: NetworkManager, pkt: S35PacketUpdateTileEntity): Unit = readFromNBT(pkt.func_148857_g())
 }
