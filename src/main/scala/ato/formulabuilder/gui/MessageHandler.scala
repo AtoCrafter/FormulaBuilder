@@ -8,6 +8,12 @@ class MessageHandler extends IMessageHandler[Message, IMessage] {
     val world = ctx.getServerHandler.playerEntity.worldObj
     world.getTileEntity(message.x, message.y, message.z) match {
       case tile: TileEntityFormulaBuilder => {
+        tile.xMin = message.xMin
+        tile.xMax = message.xMax
+        tile.yMin = message.yMin
+        tile.yMax = message.yMax
+        tile.zMin = message.zMin
+        tile.zMax = message.zMax
         tile.formula = message.formula
         tile.setup
       }

@@ -24,14 +24,22 @@ class GuiContainerFormulaBuilder(container: ContainerFormulaBuilder) extends Gui
     val i = (this.width - this.xSize) / 2
     val j = (this.height - this.ySize) / 2
 
+    val tile = container.tileentity
+
     ranges = (0 to 5).map(n => new GuiTextField(fontRendererObj, i + xSize * (n % 2) * 3 / 4, j + rowHeight * (n / 2), xSize / 4, boxHeight)).toList
+    ranges(0).setText(tile.xMin.toString)
+    ranges(1).setText(tile.xMax.toString)
+    ranges(2).setText(tile.yMin.toString)
+    ranges(3).setText(tile.yMax.toString)
+    ranges(4).setText(tile.zMin.toString)
+    ranges(5).setText(tile.zMax.toString)
 
     formulas = (0 to 5).map(n => {
       val formula = new GuiTextField(fontRendererObj, i, j + rowHeight * (3 + n), xSize, boxHeight)
       formula.setMaxStringLength(1024)
       formula
     }).toList
-    setGuiFormulas(container.tileentity.formula)
+    setGuiFormulas(tile.formula)
 
     buttonSubmit = new GuiButton(0, i, j + ySize - 20, xSize, 20, "Formula Update")
     buttonList.asInstanceOf[java.util.List[GuiButton]].add(buttonSubmit)
@@ -61,21 +69,34 @@ class GuiContainerFormulaBuilder(container: ContainerFormulaBuilder) extends Gui
   }
 
   override def actionPerformed(button: GuiButton): Unit = button match {
-    case buttonSubmit => {
-      syncFormula
-      container.tileentity.formula = getFormula
-      container.tileentity.setup
-    }
+    case buttonSubmit => syncFormula
     case _ =>
   }
 
   def syncFormula: Unit = {
+    val tile = container.tileentity
+    
     val message = new Message()
-    message.x = container.tileentity.xCoord
-    message.y = container.tileentity.yCoord
-    message.z = container.tileentity.zCoord
+    message.x = tile.xCoord
+    message.y = tile.yCoord
+    message.z = tile.zCoord
+    message.xMin = parseInt(ranges(0).getText)
+    message.xMax = parseInt(ranges(1).getText)
+    message.yMin = parseInt(ranges(2).getText)
+    message.yMax = parseInt(ranges(3).getText)
+    message.zMin = parseInt(ranges(4).getText)
+    message.zMax = parseInt(ranges(5).getText)
     message.formula = getFormula
     FormulaBuilder.packetHandler.sendToServer(message)
+
+    tile.xMin = message.xMin
+    tile.xMax = message.xMax
+    tile.yMin = message.yMin
+    tile.yMax = message.yMax
+    tile.zMin = message.zMin
+    tile.zMax = message.zMax
+    tile.formula = message.formula
+    tile.setup
   }
 
   def getFormula: String = {
@@ -90,5 +111,11 @@ class GuiContainerFormulaBuilder(container: ContainerFormulaBuilder) extends Gui
   def setGuiFormulas(formula: String): Unit = {
     val fs = formula.split("___> && <___").map(_.replaceAll("<___", "").replaceAll("___>", ""))
     (0 to math.min(fs.size, formulas.size) - 1).foreach(i => formulas(i).setText(fs(i)))
+  }
+
+  def parseInt(s: String): Int = try {
+    s.toInt
+  } catch {
+    case e: NumberFormatException => 0
   }
 }

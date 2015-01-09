@@ -13,9 +13,12 @@ class TileEntityFormulaBuilder extends TileEntity {
 
   var activated = false
   var progress = 0
-  var xlist = -50 to 50
-  var ylist = -50 to 50
-  var zlist = -50 to 50
+  var xMin = 0
+  var xMax = 0
+  var yMin = 0
+  var yMax = 0
+  var zMin = 0
+  var zMax = 0
   var list: IndexedSeq[(Int, Int, Int)] = _
   var formula = ""
   var func: (Int, Int, Int) => Boolean = _
@@ -36,9 +39,9 @@ class TileEntityFormulaBuilder extends TileEntity {
 
   private def calculate: Unit = {
     list = for {
-      dx <- xlist
-      dy <- ylist
-      dz <- zlist
+      dx <- xMin to xMax
+      dy <- yMin to yMax
+      dz <- zMin to zMax
       if isValidCoord(xCoord + dx, yCoord + dy, zCoord + dz) && evaluate(dx, dy, dz)
     } yield (dx, dy, dz)
   }
@@ -68,6 +71,13 @@ class TileEntityFormulaBuilder extends TileEntity {
     super.readFromNBT(nbt)
     val tag = nbt.getCompoundTag("FormulaBuilder")
     if (tag != null) {
+      val range = tag.getIntArray("Range")
+      xMin = range(0)
+      xMax = range(1)
+      yMin = range(2)
+      yMax = range(3)
+      zMin = range(4)
+      zMax = range(5)
       formula = tag.getString("Formula")
       activated = tag.getBoolean("Activated")
       if (activated) {
@@ -80,6 +90,7 @@ class TileEntityFormulaBuilder extends TileEntity {
   override def writeToNBT(nbt: NBTTagCompound): Unit = {
     super.writeToNBT(nbt)
     val tag = new NBTTagCompound()
+    tag.setIntArray("Range", Array(xMin, xMax, yMin, yMax, zMin, zMax))
     tag.setString("Formula", formula)
     tag.setBoolean("Activated", activated)
     tag.setInteger("Progress", progress)
