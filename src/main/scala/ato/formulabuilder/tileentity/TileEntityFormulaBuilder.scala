@@ -19,9 +19,7 @@ class TileEntityFormulaBuilder extends TileEntity {
 
   setup
 
-  override def updateEntity(): Unit = {
-    work
-  }
+  override def updateEntity(): Unit = work
 
   def setup: Unit = {
     parser.parse(formula) match {

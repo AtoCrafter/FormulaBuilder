@@ -12,13 +12,15 @@ import cpw.mods.fml.relauncher.Side
 @Mod(modid = "FormulaBuilder", modLanguage = "scala")
 object FormulaBuilder {
 
+  val packetHandler = NetworkRegistry.INSTANCE.newSimpleChannel("FormulaBuilder")
+
   val blockBuilder = new BlockFormulaBuilder()
 
   @EventHandler
   def preInit(event: FMLPreInitializationEvent): Unit = {
     GameRegistry.registerBlock(blockBuilder, "FormulaBuilder")
 
-    NetworkRegistry.INSTANCE.newSimpleChannel("FormulaBuilder").registerMessage(
+    packetHandler.registerMessage(
       classOf[MessageHandler], classOf[Message], 0, Side.SERVER)
   }
 

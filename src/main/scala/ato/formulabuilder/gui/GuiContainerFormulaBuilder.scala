@@ -1,13 +1,15 @@
 package ato.formulabuilder.gui
 
-import net.minecraft.client.gui.GuiTextField
+import ato.formulabuilder.FormulaBuilder
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.client.gui.{GuiButton, GuiTextField}
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 
 class GuiContainerFormulaBuilder(container: ContainerFormulaBuilder) extends GuiContainer(container) {
 
   var textField: GuiTextField = _
+  var buttonSubmit: GuiButton = _
 
   override def drawGuiContainerBackgroundLayer(p_146976_1_ : Float, p_146976_2_ : Int, p_146976_3_ : Int): Unit = {}
 
@@ -19,6 +21,8 @@ class GuiContainerFormulaBuilder(container: ContainerFormulaBuilder) extends Gui
     val j = (this.height - this.ySize) / 2
     textField = new GuiTextField(fontRendererObj, i + 62, j + 24, 103, 12)
     textField.setFocused(true)
+    buttonSubmit = new GuiButton(0, 0, 0, "Submit")
+    buttonList.asInstanceOf[java.util.List[GuiButton]].add(buttonSubmit)
   }
 
   override def drawScreen(i: Int, j: Int, f: Float): Unit = {
@@ -29,14 +33,26 @@ class GuiContainerFormulaBuilder(container: ContainerFormulaBuilder) extends Gui
   }
 
   override def keyTyped(c: Char, code: Int): Unit = {
-    if (textField.textboxKeyTyped(c, code)) {
-      syncFormula
-    } else {
+    if (!textField.textboxKeyTyped(c, code)) {
       super.keyTyped(c, code)
     }
   }
 
+  override def actionPerformed(button: GuiButton): Unit = button match {
+    case buttonSubmit => {
+      syncFormula
+      container.tileentity.formula = textField.getText
+      container.tileentity.setup
+    }
+    case _ =>
+  }
+
   def syncFormula: Unit = {
-    val formula = textField.getText
+    val message = new Message()
+    message.x = container.tileentity.xCoord
+    message.y = container.tileentity.yCoord
+    message.z = container.tileentity.zCoord
+    message.formula = textField.getText
+    FormulaBuilder.packetHandler.sendToServer(message)
   }
 }
