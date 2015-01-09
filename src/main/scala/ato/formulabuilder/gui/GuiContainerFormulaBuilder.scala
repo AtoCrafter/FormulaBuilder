@@ -75,7 +75,7 @@ class GuiContainerFormulaBuilder(container: ContainerFormulaBuilder) extends Gui
 
   def syncFormula: Unit = {
     val tile = container.tileentity
-    
+
     val message = new Message()
     message.x = tile.xCoord
     message.y = tile.yCoord

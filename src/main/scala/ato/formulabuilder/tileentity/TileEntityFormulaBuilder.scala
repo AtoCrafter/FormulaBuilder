@@ -1,7 +1,8 @@
 package ato.formulabuilder.tileentity
 
 import ato.formulabuilder.util.ParserFormula
-import net.minecraft.init.Blocks
+import net.minecraft.inventory.IInventory
+import net.minecraft.item.{ItemBlock, ItemStack}
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity
 import net.minecraft.network.{NetworkManager, Packet}
@@ -51,15 +52,30 @@ class TileEntityFormulaBuilder extends TileEntity {
   private def work: Unit = if (activated) {
     if (progress < list.length) {
       val (dx, dy, dz) = list.apply(progress)
-      progress += 1
-      val (x, y, z) = (xCoord + dx, yCoord + dy, zCoord + dz)
-      if (worldObj.isAirBlock(x, y, z)) {
-        worldObj.setBlock(x, y, z, Blocks.glass)
-      } else {
-        work
+      val itemstack = getBuildingBlock
+      if (itemstack != null) {
+        progress += 1
+        val (x, y, z) = (xCoord + dx, yCoord + dy, zCoord + dz)
+        if (worldObj.isAirBlock(x, y, z)) {
+          worldObj.setBlock(x, y, z, itemstack.getItem.asInstanceOf[ItemBlock].field_150939_a)
+        } else {
+          work
+        }
       }
     } else {
       activated = false
+    }
+  }
+
+  private def getBuildingBlock: ItemStack = {
+    worldObj.getTileEntity(xCoord, yCoord + 1, zCoord) match {
+      case tile: IInventory =>
+        (0 to tile.getSizeInventory - 1).find(n =>
+          tile.getStackInSlot(n) != null && tile.getStackInSlot(n).getItem.isInstanceOf[ItemBlock]) match {
+          case Some(i) => tile.decrStackSize(i, 1)
+          case None => null
+        }
+      case _ => null
     }
   }
 
