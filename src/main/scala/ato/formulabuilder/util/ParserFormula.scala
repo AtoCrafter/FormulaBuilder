@@ -22,7 +22,7 @@ class ParserFormula extends JavaTokenParsers {
   }
 
   // cond2 ::= cond3 | "(" expr ")".
-  def cond2: Parser[(Int, Int, Int) => Boolean] = cond3 | "(" ~> expr <~ ")"
+  def cond2: Parser[(Int, Int, Int) => Boolean] = cond3 | gl ~> expr <~ gr
 
   // cond3 ::= expr1 "==" expr1 | expr1 "<" expr1 | expr1 ">" expr1.
   def cond3: Parser[(Int, Int, Int) => Boolean] =
@@ -48,10 +48,14 @@ class ParserFormula extends JavaTokenParsers {
   def factor: Parser[(Int, Int, Int) => Double] =
     floatingPointNumber ^^ (s => ((x: Int, y: Int, z: Int) => s.toDouble)) |
       coord |
-      "(" ~> expr1 <~ ")"
+      gl ~> expr1 <~ gr
 
   // coord ::= "x" | "y" | "z"
   def coord: Parser[(Int, Int, Int) => Double] = "x" ^^ (_ => (x: Int, y: Int, z: Int) => x.toDouble) |
     "y" ^^ (_ => (x: Int, y: Int, z: Int) => y.toDouble) |
     "z" ^^ (_ => (x: Int, y: Int, z: Int) => z.toDouble)
+
+  def gl: Parser[String] = "(" | "<___"
+
+  def gr: Parser[String] = ")" | "___>"
 }
