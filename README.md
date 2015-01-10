@@ -1,3 +1,6 @@
+[![Build Status](https://drone.io/github.com/AtoCrafter/FormulaBuilder/status.png)](https://drone.io/github.com/AtoCrafter/FormulaBuilder/latest)
+
+
 # Formula Builder
 
 Minecraft MOD
