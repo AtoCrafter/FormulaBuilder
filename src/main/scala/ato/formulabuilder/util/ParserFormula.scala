@@ -24,11 +24,13 @@ class ParserFormula extends JavaTokenParsers {
   // cond2 ::= cond3 | "(" expr ")".
   def cond2: Parser[(Int, Int, Int) => Boolean] = cond3 | gl ~> expr <~ gr
 
-  // cond3 ::= expr1 "==" expr1 | expr1 "<" expr1 | expr1 ">" expr1.
+  // cond3 ::= expr1 "==" expr1 | expr1 "<" expr1 | expr1 ">" expr1 | expr1 "<=" expr1 | expr1 ">=" expr1.
   def cond3: Parser[(Int, Int, Int) => Boolean] =
     expr1 ~ "==" ~ expr1 ^^ { case e1 ~ "==" ~ e2 => (x: Int, y: Int, z: Int) => e1(x, y, z) == e2(x, y, z)} |
       expr1 ~ "<" ~ expr1 ^^ { case e1 ~ "<" ~ e2 => (x: Int, y: Int, z: Int) => e1(x, y, z) < e2(x, y, z)} |
-      expr1 ~ ">" ~ expr1 ^^ { case e1 ~ ">" ~ e2 => (x: Int, y: Int, z: Int) => e1(x, y, z) > e2(x, y, z)}
+      expr1 ~ ">" ~ expr1 ^^ { case e1 ~ ">" ~ e2 => (x: Int, y: Int, z: Int) => e1(x, y, z) > e2(x, y, z)} |
+      expr1 ~ "<=" ~ expr1 ^^ { case e1 ~ "<=" ~ e2 => (x: Int, y: Int, z: Int) => e1(x, y, z) <= e2(x, y, z)} |
+      expr1 ~ ">=" ~ expr1 ^^ { case e1 ~ ">=" ~ e2 => (x: Int, y: Int, z: Int) => e1(x, y, z) >= e2(x, y, z)}
 
   // expr1 ::= term { "+" term | "-" term }.
   def expr1: Parser[(Int, Int, Int) => Double] = term ~ rep("+" ~ term | "-" ~ term) ^^ { case t1 ~ ts => (x: Int, y: Int, z: Int) => t1(x, y, z) + ts.map({
