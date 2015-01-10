@@ -46,11 +46,12 @@ class ParserFormula extends JavaTokenParsers {
   }).product
   }
 
-  // factor::= number | coord | "(" expr1 ")".
+  // factor::= number | coord | "(" expr1 ")" | "|" expr1 "|".
   def factor: Parser[(Int, Int, Int) => Double] =
-    floatingPointNumber ^^ (s => ((x: Int, y: Int, z: Int) => s.toDouble)) |
+    floatingPointNumber ^^ (s => (x: Int, y: Int, z: Int) => s.toDouble) |
       coord |
-      gl ~> expr1 <~ gr
+      gl ~> expr1 <~ gr |
+      "|" ~ expr1 ~ "|" ^^ { case "|" ~ e ~ "|" => (x: Int, y: Int, z: Int) => math.abs(e(x, y, z))}
 
   // coord ::= "x" | "y" | "z"
   def coord: Parser[(Int, Int, Int) => Double] = "x" ^^ (_ => (x: Int, y: Int, z: Int) => x.toDouble) |
