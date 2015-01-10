@@ -1,6 +1,7 @@
 package ato.formulabuilder.gui
 
 import ato.formulabuilder.FormulaBuilder
+import ato.formulabuilder.util.ParserFormula
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.{GuiButton, GuiTextField}
 import org.lwjgl.input.Keyboard
@@ -10,6 +11,7 @@ class GuiContainerFormulaBuilder(container: ContainerFormulaBuilder) extends Gui
 
   val boxHeight = 12
   val rowHeight = 16
+  val parser = new ParserFormula()
 
   var ranges: List[GuiTextField] = _
   var formulas: List[GuiTextField] = _
@@ -66,6 +68,7 @@ class GuiContainerFormulaBuilder(container: ContainerFormulaBuilder) extends Gui
 
   override def keyTyped(c: Char, code: Int): Unit = {
     if (!(formulas ++ ranges).exists(_.textboxKeyTyped(c, code))) super.keyTyped(c, code)
+    buttonSubmit.enabled = parser.parse(getFormula).isDefined
   }
 
   override def actionPerformed(button: GuiButton): Unit = button match {
