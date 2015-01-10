@@ -12,6 +12,7 @@ import net.minecraft.world.World
 class BlockFormulaBuilder extends BlockContainer(Material.iron) {
 
   setBlockName("FormulaBuilder")
+  setBlockTextureName("portal")
   setCreativeTab(CreativeTabs.tabRedstone)
 
   override def onBlockActivated(world: World, x: Int, y: Int, z: Int, player: EntityPlayer, i1: Int, f1: Float, f2: Float, f3: Float): Boolean = {
